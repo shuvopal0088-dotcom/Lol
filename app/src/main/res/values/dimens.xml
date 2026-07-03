@@ -1,0 +1,5 @@
+<resources>
+    <!-- Default dimensions -->
+    <dimen name="key_height">46dp</dimen>
+    <dimen name="toolbar_height">44dp</dimen>
+</resources>
