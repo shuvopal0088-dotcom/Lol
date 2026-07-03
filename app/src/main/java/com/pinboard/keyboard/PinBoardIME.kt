@@ -23,15 +23,18 @@ import java.util.concurrent.Executors
  */
 class PinBoardIME : InputMethodService(), InputProxy {
 
-    private lateinit var store: PinStore
-    private lateinit var prefs: PrefsManager
+    // Backing fields are named differently from the interface properties to
+    // avoid "conflicting declarations". They are exposed to the UI through the
+    // overridden `store` / `prefs` getters below.
+    private lateinit var storeImpl: PinStore
+    private lateinit var prefsImpl: PrefsManager
     private val io = Executors.newSingleThreadExecutor()
     private val main = Handler(Looper.getMainLooper())
 
     override fun onCreate() {
         super.onCreate()
-        prefs = PrefsManager(applicationContext)
-        store = PinStore(applicationContext)
+        prefsImpl = PrefsManager(applicationContext)
+        storeImpl = PinStore(applicationContext)
     }
 
     override fun onCreateInputView(): View {
@@ -39,8 +42,8 @@ class PinBoardIME : InputMethodService(), InputProxy {
         return KeyboardView(this, this)
     }
 
-    override val store: PinStore get() = this.store
-    override val prefs: PrefsManager get() = this.prefs
+    override val store: PinStore get() = storeImpl
+    override val prefs: PrefsManager get() = prefsImpl
 
     override fun commit(text: String) {
         currentInputConnection?.commitText(text, 1)
