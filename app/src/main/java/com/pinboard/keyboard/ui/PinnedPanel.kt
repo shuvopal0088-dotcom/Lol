@@ -18,6 +18,10 @@ import com.pinboard.keyboard.data.PinnedMessage
  * Pinned messages: search, add, edit, delete, one-tap insert.
  * Editing is done with an INLINE editor (not a dialog) because an IME's
  * service window cannot reliably host an AlertDialog without crashing.
+ *
+ * Note: the view properties are `lateinit var` (not uninitialized `val`)
+ * because they are assigned inside helper functions, and Kotlin only allows
+ * deferred `val` initialization directly inside an `init {}` block.
  */
 class PinnedPanel(
     context: Context,
@@ -25,9 +29,9 @@ class PinnedPanel(
     private val theme: KeyboardTheme
 ) : LinearLayout(context) {
 
-    private val searchBox: EditText
-    private val listContainer: LinearLayout
-    private val editorHost: LinearLayout
+    private lateinit var searchBox: EditText
+    private lateinit var listContainer: LinearLayout
+    private lateinit var editorHost: LinearLayout
     private var all: List<PinnedMessage> = emptyList()
 
     init {
@@ -83,7 +87,7 @@ class PinnedPanel(
             marginEnd = context.dp(8)
         })
         val newBtn = TextView(context).apply {
-            text = "+ New"
+            this.text = "+ New"
             setTextColor(theme.accentText)
             typeface = Typeface.DEFAULT_BOLD
             textSize = 13f
@@ -115,7 +119,7 @@ class PinnedPanel(
     }
 
     private fun emptyState(): View = TextView(context).apply {
-        text = if (all.isEmpty()) "No pinned messages yet.\nTap “+ New” to add one."
+        this.text = if (all.isEmpty()) "No pinned messages yet.\nTap “+ New” to add one."
         else "No matches found."
         gravity = Gravity.CENTER
         setTextColor(theme.mutedText)
@@ -135,7 +139,7 @@ class PinnedPanel(
             }
         }
         val body = TextView(context).apply {
-            text = m.text
+            this.text = m.text
             setTextColor(theme.keyText)
             textSize = 14f
             maxLines = 6
@@ -211,7 +215,7 @@ class PinnedPanel(
 
     private fun smallTextButton(label: String, onClick: () -> Unit): View =
         TextView(context).apply {
-            text = label
+            this.text = label
             setTextColor(theme.accentBg)
             typeface = Typeface.DEFAULT_BOLD
             textSize = 13f
