@@ -56,12 +56,16 @@ class KeysView(
         }
     }
 
+    /** A single letter key. `c` must already be a 1-char String (not a Char). */
+    private fun letterKey(c: String): K =
+        K({ if (shift && page == Page.LETTERS) c.uppercase() else c }, 1f, Kind.CHAR) { typeChar(c) }
+
     private fun lettersRows(): List<List<K>> {
-        val r1 = "qwertyuiop".map { c -> K({ if (shift) c.uppercase() else c }, 1f, Kind.CHAR) { typeChar(c) } }
-        val r2 = "asdfghjkl".map { c -> K({ if (shift) c.uppercase() else c }, 1f, Kind.CHAR) { typeChar(c) } }
+        val r1 = "qwertyuiop".map { letterKey(it.toString()) }
+        val r2 = "asdfghjkl".map { letterKey(it.toString()) }
         val r3 = mutableListOf<K>()
         r3 += K({ "⇧" }, 1.5f, Kind.FN) { shift = !shift; render() }
-        "zxcvbnm".forEach { c -> r3 += K({ if (shift) c.uppercase() else c }, 1f, Kind.CHAR) { typeChar(c) } }
+        "zxcvbnm".forEach { r3 += letterKey(it.toString()) }
         r3 += K({ "⌫" }, 1.5f, Kind.FN) { proxy.deleteChar() }
         val r4 = listOf(
             K({ "123" }, 1.5f, Kind.FN) { page = Page.NUMBERS; shift = false; render() },
@@ -74,7 +78,7 @@ class KeysView(
     }
 
     private fun numbersRows(): List<List<K>> {
-        val r1 = "1234567890".map { c -> K({ c }, 1f, Kind.CHAR) { proxy.commit(c) } }
+        val r1 = "1234567890".map { c -> K({ c.toString() }, 1f, Kind.CHAR) { proxy.commit(c.toString()) } }
         val r2 = listOf("-", "/", ":", ";", "(", ")", "$", "&", "@", "\"")
             .map { c -> K({ c }, 1f, Kind.CHAR) { proxy.commit(c) } }
         val r3 = mutableListOf<K>()
@@ -120,7 +124,7 @@ class KeysView(
         for (k in keys) {
             val h = context.dp(44)
             val b = Button(context).apply {
-                text = k.label()
+                this.text = k.label()
                 isAllCaps = false
                 transformationMethod = null
                 typeface = Typeface.DEFAULT
