@@ -58,8 +58,10 @@ class KeyboardView(context: Context, private val proxy: InputProxy) :
     }
 
     private fun quickPasteButton(id: Int): View {
-        val text = proxy.prefs.slotText(id)
-        val enter = proxy.prefs.slotEnter(id)
+        // NOTE: locals are named slotText/slotEnter (not text/enter) so they
+        // don't shadow the TextView members inside the `apply {}` blocks.
+        val slotText = proxy.prefs.slotText(id)
+        val slotEnter = proxy.prefs.slotEnter(id)
 
         val container = LinearLayout(context).apply {
             orientation = HORIZONTAL
@@ -69,13 +71,13 @@ class KeyboardView(context: Context, private val proxy: InputProxy) :
             setPadding(p, context.dp(9), p, context.dp(9))
         }
         val badge = TextView(context).apply {
-            text = id.toString()
+            this.text = id.toString()
             setTextColor(theme.onPrimaryContainer)
             typeface = Typeface.DEFAULT_BOLD
             textSize = 13f
         }
         val label = TextView(context).apply {
-            this.text = if (text.isBlank()) "Hold to set" else text
+            this.text = if (slotText.isBlank()) "Hold to set" else slotText
             setTextColor(theme.onPrimaryContainer)
             textSize = 12f
             maxLines = 1
@@ -85,9 +87,9 @@ class KeyboardView(context: Context, private val proxy: InputProxy) :
         container.addView(label, LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f).apply {
             marginStart = context.dp(6)
         })
-        if (enter && text.isNotBlank()) {
+        if (slotEnter && slotText.isNotBlank()) {
             container.addView(TextView(context).apply {
-                text = "↵"
+                this.text = "↵"
                 setTextColor(theme.onPrimaryContainer)
                 textSize = 13f
             })
@@ -148,7 +150,7 @@ class KeyboardView(context: Context, private val proxy: InputProxy) :
 
     private fun tool(label: String, onClick: () -> Unit, onLong: (() -> Unit)?): View {
         val b = Button(context).apply {
-            text = label
+            this.text = label
             isAllCaps = false
             transformationMethod = null
             textSize = 12f
