@@ -1,4 +1,4 @@
--package com.pinboard.keyboard.data
+package com.pinboard.keyboard.data
 
 import android.content.Context
 
